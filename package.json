@@ -12,7 +12,9 @@
     },
     "dependencies": {
         "request": "^2.81.0",
+        "repeat": "^0.0.6",
         "mqtt": "^2.6.2",
+        "netatmo": "^2.1.0",
         "url": "*"
     },
     "engines": {
