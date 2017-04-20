@@ -24,7 +24,6 @@ const client = mqtt.connect(host)
 
 client.on('connect', () => {
     logging.log('Connected')
-    client.subscribe('#')
 })
 
 client.on('disconnect', () => {
