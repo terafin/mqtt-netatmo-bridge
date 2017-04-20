@@ -1,0 +1,21 @@
+{
+    "name": "mqtt-netatmo-bridge",
+    "version": "0.0.1",
+    "description": "Bridge netatmo to and from MQTT",
+    "license": "MIT",
+    "main": "mqtt-netatmo-bridge.js",
+    "repository": {
+        "url": "https://github.com/terafin/mqtt-netatmo-bridge"
+    },
+    "scripts": {
+        "start": "node mqtt-netatmo-bridge.js"
+    },
+    "dependencies": {
+        "request": "^2.81.0",
+        "mqtt": "^2.6.2",
+        "url": "*"
+    },
+    "engines": {
+        "node": ">=4"
+    }
+}
