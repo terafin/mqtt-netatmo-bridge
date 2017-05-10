@@ -2,34 +2,20 @@
 const mqtt = require('mqtt')
 const netatmo = require('netatmo')
 const repeat = require('repeat')
+const _ = require('lodash')
 const logging = require('./homeautomation-js-lib/logging.js')
-const mqtt_helpers = require('./homeautomation-js-lib/mqtt_helpers.js')
+require('./homeautomation-js-lib/mqtt_helpers.js')
 
 
 // Config
-const host = process.env.MQTT_HOST
 const netatmo_user = process.env.NETATMO_USER
 const netatmo_pass = process.env.NETATMO_PASS
 const netatmo_client_id = process.env.NETATMO_CLIENT_ID
 const netatmo_client_secret = process.env.NETATMO_CLIENT_SECRET
 const topicPrefix = process.env.NETATMO_TOPIC
 
-// Set up modules
-logging.set_enabled(true)
-
 // Setup MQTT
-const client = mqtt.connect(host)
-
-// MQTT Observation
-
-client.on('connect', () => {
-    logging.log('Connected')
-})
-
-client.on('disconnect', () => {
-    logging.log('Disconnected, reconnecting')
-    client.connect(host)
-})
+const client = mqtt.setupClient(null, null)
 
 function isInterestingDataPoint(inName) {
     const dataPointName = inName.toLowerCase()
@@ -50,7 +36,6 @@ function isInterestingDataPoint(inName) {
     return null
 }
 
-
 var auth = {
     'client_id': netatmo_client_id,
     'client_secret': netatmo_client_secret,
@@ -64,34 +49,34 @@ var api = new netatmo(auth)
 function processModule(module) {
     const name = module.module_name
     const data = module.dashboard_data
-    logging.log('Looking at module: ' + name)
+    logging.info('Looking at module: ' + name)
 
     const batteryPercent = module.battery_percent
     if (batteryPercent !== undefined) {
         const batteryTopic = [topicPrefix, 'battery', name].join('/')
-        mqtt_helpers.publish(client, '' + batteryTopic, '' + batteryPercent)
+        client.smartPublish('' + batteryTopic, '' + batteryPercent)
     }
 
-    if (data === null || data === undefined) return
+    if (_.isNil(data)) return
 
     Object.keys(data).forEach(function(dataKey) {
         const publishKey = isInterestingDataPoint(dataKey)
-        if (publishKey !== null) {
+        if (!_.isNil(publishKey)) {
             const value = data[dataKey]
             const topicToPublish = [topicPrefix, publishKey, name].join('/')
 
-            mqtt_helpers.publish(client, '' + topicToPublish, '' + value)
+            client.smartPublish('' + topicToPublish, '' + value)
         }
     }, this)
 }
 var stationResponse = function(err, devices) {
-    logging.log(devices)
+    logging.info(devices)
     const station = devices[0]
     const foundModules = station.modules
 
     processModule(station)
 
-    if (foundModules === null || foundModules === undefined) return
+    if (_.isNil(foundModules)) return
 
     foundModules.forEach(function(module) {
         processModule(module)
@@ -100,18 +85,18 @@ var stationResponse = function(err, devices) {
 }
 
 function pollData() {
-    logging.log('Polling for new info')
+    logging.info('Polling for new info')
 
     api.getStationsData(null, stationResponse)
 }
 
 function refreshToken() {
-    logging.log('Refreshing login token')
+    logging.info('Refreshing login token')
     api = new netatmo(auth)
 }
 
 function startMonitoring() {
-    logging.log('Starting netatmo <-> MQTT')
+    logging.info('Starting netatmo <-> MQTT')
     repeat(pollData).every(30, 's').start.in(1, 'sec')
     repeat(refreshToken).every(30, 'm').start.in(30, 'sec')
 }
