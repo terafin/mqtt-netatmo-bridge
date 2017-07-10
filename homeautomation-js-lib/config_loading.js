@@ -31,100 +31,15 @@ module.exports.get_configs = function() {
 }
 
 module.exports.deviceIterator = function(callback) {
+    if (_.isNil(configs)) return
+
     configs.forEach(function(config_item) {
+        if (_.isNil(config_item)) return
+
         Object.keys(config_item).forEach(function(key) {
             callback(key, config_item[key])
         }, this)
     }, this)
-}
-
-module.exports.nameForTopic = function(in_topic) {
-    var foundName = null
-
-    configs.forEach(function(config_item) {
-        if (foundName !== null) return
-
-        Object.keys(config_item).forEach(function(key) {
-            if (foundName !== null) return
-
-            const map = config_item[key]
-            const topic = map['topic']
-
-            if (topic === in_topic)
-                foundName = map['name']
-
-        }, this)
-    }, this)
-
-    return foundName
-}
-
-module.exports.isVoiceEnabledForTopic = function(in_topic) {
-    var foundVoice = false
-    var voiceResult = false
-
-    configs.forEach(function(config_item) {
-        if (foundVoice === true) return
-
-        Object.keys(config_item).forEach(function(key) {
-            if (foundVoice === true) return
-
-            const map = config_item[key]
-
-            const topic = map['topic']
-            if (topic === in_topic) {
-                if (map['voice_control'] !== undefined)
-                    voiceResult = map['voice_control']
-                foundVoice = true
-            }
-
-        }, this)
-    }, this)
-
-    return voiceResult
-}
-
-module.exports.translate_to_topic = function(in_topic) {
-    var found_topic = null
-
-    configs.forEach(function(config_item) {
-        if (found_topic !== null) return
-
-        Object.keys(config_item).forEach(function(key) {
-            if (found_topic !== null) return
-
-            const map = config_item[key]
-            const src_topic = map['change_topic']
-
-            if (src_topic === in_topic)
-                found_topic = map['topic']
-
-        }, this)
-    }, this)
-
-    return found_topic
-}
-
-module.exports.translate_from_topic = function(in_topic) {
-    var found_topic = null
-
-    configs.forEach(function(config_item) {
-        if (found_topic !== null) return
-
-        Object.keys(config_item).forEach(function(key) {
-            if (found_topic !== null) return
-
-            const map = config_item[key]
-
-            const topic = map['topic']
-            const src_topic = map['change_topic']
-            if (topic === in_topic)
-                found_topic = src_topic
-
-        }, this)
-    }, this)
-
-    return found_topic
 }
 
 function load_device_config() {

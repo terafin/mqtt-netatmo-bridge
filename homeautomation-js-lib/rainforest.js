@@ -1,26 +1,14 @@
 const logging = require('./logging.js')
 const request = require('request')
 const repeat = require('repeat')
+const EventEmitter = require('events')
+const _ = require('lodash')
 
-var rainforest_ip = null
-var rainforest_user = null
-var rainforest_pass = null
-var client_callback = null
+const rainforest_ip = process.env.RAINFOREST_IP
+const rainforest_user = process.env.RAINFOREST_USER
+const rainforest_pass = process.env.RAINFOREST_PASSWORD
 
-exports.set_ip = function(ip_address) {
-    rainforest_ip = ip_address
-}
-
-exports.set_user_pass = function(username, password) {
-    rainforest_user = username
-    rainforest_pass = password
-}
-
-exports.set_callback = function(callback) {
-    client_callback = callback
-    start_monitoring()
-}
-
+module.exports = new EventEmitter()
 
 function send_request(callback) {
     var rainforest_url = 'http://' + rainforest_ip + '/cgi-bin/cgi_manager'
@@ -43,16 +31,14 @@ function check_power() {
     logging.info('Checking power...')
 
     send_request(function(error, body) {
-        if (client_callback !== null && client_callback !== undefined) {
-            try {
-                logging.debug('body:' + body)
-                client_callback(body)
-            } catch (err) {}
-        }
+        module.exports.emit('energy-updated', body)
+
     })
 }
 
-function start_monitoring() {
+function startMonitoring() {
     logging.info('Starting to monitor: ' + rainforest_ip)
     repeat(check_power).every(5, 's').start.in(1, 'sec')
 }
+
+startMonitoring()

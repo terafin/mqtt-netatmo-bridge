@@ -17,11 +17,11 @@ module.exports = new EventEmitter()
 
 startMonitoring()
 
-exports.off = function() {
+module.exports.off = function() {
     send_airscape_request(4, null)
 }
 
-exports.setSpeed = function(target_speed) {
+module.exports.setSpeed = function(target_speed) {
     logging.info('Targeting speed: ' + target_speed)
     if (current_speed == target_speed) {
         logging.info('Same speed, bailing')
