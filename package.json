@@ -13,7 +13,7 @@
     "dependencies": {
         "lodash": "^4.17.4",
         "winston": "^2.3.1",
-        "winston-logstash": "^0.3.0",
+        "winston-splunk-httplogger": "^1.2.2",
         "request": "^2.81.0",
         "repeat": "^0.0.6",
         "mqtt": "^2.6.2",
