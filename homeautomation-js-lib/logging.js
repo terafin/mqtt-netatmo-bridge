@@ -2,13 +2,13 @@ const _ = require('lodash')
 var Winston = require('winston')
 require('winston-splunk-httplogger')
 
+const disableSyslog = process.env.DISABLE_SYSLOG
+
 var winston = new(Winston.Logger)({
     transports: [
         new(Winston.transports.Console)({ level: ((disableSyslog === true) ? 'error' : 'info') }),
     ]
 })
-
-const disableSyslog = process.env.DISABLE_SYSLOG
 
 var name = process.env.name
 
