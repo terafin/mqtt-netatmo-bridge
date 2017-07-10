@@ -1,15 +1,15 @@
 const _ = require('lodash')
 var Winston = require('winston')
-require('winston-logstash')
+require('winston-splunk-httplogger')
 
 var winston = new(Winston.Logger)({
     transports: [
-        new(Winston.transports.Console)({ level: 'debug' })
+        new(Winston.transports.Console)({ level: ((disableSyslog === true) ? 'error' : 'info') }),
     ]
 })
 
-const logstashHost = process.env.LOGSTASH_HOST
-const logstashPort = process.env.LOGSTASH_PORT
+const disableSyslog = process.env.DISABLE_SYSLOG
+
 var name = process.env.name
 
 if (_.isNil(name)) {
@@ -20,15 +20,17 @@ if (_.isNil(name)) {
     name = 'winston'
 }
 
-winston.info('Logging enabled for ' + name + '   (logstash sending to: ' + logstashHost + ':' + logstashPort + ')')
+var splunkSettings = {
+    token: process.env.SPLUNK_TOKEN,
+    host: process.env.SPLUNK_HOST,
+    source: 'home-automation',
+    sourcetype: name
+}
+
+winston.info('Logging enabled for ' + name + '   (splunk sending to: ' + splunkSettings.host + ':' + splunkSettings.token + ')')
 
 module.exports = winston
 
-if (!_.isNil(logstashHost)) {
-    winston.add(Winston.transports.Logstash, {
-        port: logstashPort,
-        node_name: name,
-        host: logstashHost
-    })
-
+if (!_.isNil(splunkSettings.token)) {
+    winston.add(Winston.transports.SplunkStreamEvent, { splunk: splunkSettings })
 }

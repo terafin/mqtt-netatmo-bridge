@@ -4,6 +4,7 @@ const path = require('path')
 const watch = require('watch')
 const yaml = require('js-yaml')
 const logging = require('./logging.js')
+const _ = require('lodash')
 
 var configs = []
 var config_path = null
@@ -24,18 +25,26 @@ module.exports.get_configs = function() {
 }
 
 module.exports.ruleIterator = function(callback) {
+    if (_.isNil(configs)) return
+
     configs.forEach(function(config_item) {
+        if (_.isNil(config_item)) return
+
         Object.keys(config_item).forEach(function(key) {
-            callback(key, config_item[key])
+            try {
+                callback(key, config_item[key])
+            } catch (error) {
+                logging.error('Failed callback for rule: ' + key)
+            }
         }, this)
     }, this)
 }
 
 function print_rule_config() {
-    if (configs === null || configs === undefined) return
+    if (_.isNil(configs)) return
 
     configs.forEach(function(config_item) {
-        if (config_item === null || configs === config_item) return
+        if (_.isNil(config_item)) return
 
         Object.keys(config_item).forEach(function(key) {
             logging.debug(' Rule [' + key + ']')
