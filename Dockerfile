@@ -1,8 +1,8 @@
-FROM node:6
+FROM node:6-alpine
 
-RUN mkdir -p /usr/mqtt-transform
-COPY . /usr/mqtt-transform
-WORKDIR /usr/mqtt-transform
+RUN mkdir -p /usr/node_app
+COPY . /usr/node_app
+WORKDIR /usr/node_app
 RUN npm install --production
 
 CMD ["npm", "start"]
