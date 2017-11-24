@@ -1,1 +1,0 @@
-# homeautomation-js-lib
