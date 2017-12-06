@@ -8,6 +8,8 @@ require('homeautomation-js-lib/mqtt_helpers.js')
 
 
 // Config
+const webhook_url = process.env.WEBHOOK_URL
+const webhook_port = process.env.WEBHOOK_PORT
 const netatmo_user = process.env.NETATMO_USER
 const netatmo_pass = process.env.NETATMO_PASS
 const netatmo_client_id = process.env.NETATMO_CLIENT_ID
@@ -44,6 +46,110 @@ var auth = {
 }
 
 var api = new netatmo(auth)
+
+
+api.on("error", function(error) {
+    // When the "error" event is emitted, this is called
+    console.error('Netatmo threw an error: ' + error);
+});
+
+api.on("warning", function(error) {
+    // When the "warning" event is emitted, this is called
+    console.log('Netatmo threw a warning: ' + error);
+});
+
+var getStationsData = function(err, devices) {
+    console.log(devices);
+    logging.info(devices)
+    const station = devices[0]
+    const foundModules = station.modules
+
+    processModule(station)
+
+    if (_.isNil(foundModules)) return
+
+    foundModules.forEach(function(module) {
+        processModule(module)
+    }, this)
+};
+
+var getMeasure = function(err, measure) {
+    console.log(measure.length);
+    console.log(measure[0]);
+};
+
+var getThermostatsData = function(err, devices) {
+    console.log(devices);
+};
+
+var setSyncSchedule = function(err, status) {
+    console.log(status);
+};
+
+var setThermpoint = function(err, status) {
+    console.log(status);
+};
+
+var getHomeData = function(err, data) {
+    console.log(data);
+};
+
+var handleEvents = function(err, data) {
+    console.log(data.events_list);
+};
+
+// Get Home Data
+// https://dev.netatmo.com/dev/resources/technical/reference/cameras/gethomedata
+api.getHomeData();
+
+// Get Next Events
+// See docs: https://dev.netatmo.com/dev/resources/technical/reference/cameras/getnextevents
+var options = {
+    home_id: '5a1a38b9b26ddfafc58bf1df',
+    event_id: ''
+};
+
+api.getNextEvents(options);
+
+// Get Last Event Of
+// See docs: https://dev.netatmo.com/dev/resources/technical/reference/cameras/getlasteventof
+var options = {
+    home_id: '5a1a38b9b26ddfafc58bf1df',
+    person_id: ''
+};
+
+api.getLastEventOf(options);
+
+// Get Events Until
+// See docs: https://dev.netatmo.com/dev/resources/technical/reference/cameras/geteventsuntil
+var options = {
+    home_id: '5a1a38b9b26ddfafc58bf1df',
+    event_id: '',
+};
+
+api.getEventsUntil(options);
+
+// Get Camera Picture
+// See docs: https://dev.netatmo.com/dev/resources/technical/reference/cameras/getcamerapicture
+var options = {
+    image_id: '',
+    key: ''
+};
+
+api.getCameraPicture(options);
+
+
+// Event Listeners
+api.on('get-stationsdata', getStationsData);
+api.on('get-measure', getMeasure);
+api.on('get-thermostatsdata', getThermostatsData);
+api.on('set-syncschedule', setSyncSchedule);
+api.on('set-thermpoint', setThermpoint);
+api.on('get-homedata', getHomeData);
+api.on('get-nextevents', handleEvents);
+api.on('get-lasteventof', handleEvents);
+api.on('get-eventsuntil', handleEvents);
+
 
 
 function processModule(module) {
@@ -87,7 +193,7 @@ var stationResponse = function(err, devices) {
 function pollData() {
     logging.info('Polling for new info')
 
-    api.getStationsData(null, stationResponse)
+    api.getStationsData()
 }
 
 function refreshToken() {
@@ -102,3 +208,19 @@ function startMonitoring() {
 }
 
 startMonitoring()
+
+
+const express = require('express')
+
+const app = express()
+
+app.get(webhook_url, function(req, res) {
+    console.log('request: ' + JSON.stringify(Object.keys(req)))
+    console.log('url: ' + JSON.stringify(req.url))
+    console.log('headers: ' + JSON.stringify(req.headers))
+    res.send('all is well, thanks netatmo')
+})
+
+app.listen(webhook_port, function() {
+    console.log('webhook listening on port: ', webhook_port)
+})
