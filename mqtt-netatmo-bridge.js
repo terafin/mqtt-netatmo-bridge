@@ -221,6 +221,13 @@ app.get(webhook_url, function(req, res) {
     res.send('all is well, thanks netatmo')
 })
 
+app.put(webhook_url, function(req, res) {
+    console.log('request: ' + JSON.stringify(Object.keys(req)))
+    console.log('url: ' + JSON.stringify(req.url))
+    console.log('headers: ' + JSON.stringify(req.headers))
+    res.send('all is well, thanks netatmo')
+})
+
 app.listen(webhook_port, function() {
     console.log('webhook listening on port: ', webhook_port)
 })
