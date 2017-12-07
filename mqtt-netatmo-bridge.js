@@ -160,7 +160,7 @@ function processModule(module) {
     const batteryPercent = module.battery_percent
     if (batteryPercent !== undefined) {
         const batteryTopic = [topicPrefix, 'battery', name].join('/')
-        client.smartPublish('' + batteryTopic, '' + batteryPercent)
+        client.smartPublish('' + batteryTopic, '' + batteryPercent, { retain: true })
     }
 
     if (_.isNil(data)) return
@@ -171,7 +171,7 @@ function processModule(module) {
             const value = data[dataKey]
             const topicToPublish = [topicPrefix, publishKey, name].join('/')
 
-            client.smartPublish('' + topicToPublish, '' + value)
+            client.smartPublish('' + topicToPublish, '' + value, { retain: true })
         }
     }, this)
 }
