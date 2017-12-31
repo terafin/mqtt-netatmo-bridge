@@ -102,41 +102,41 @@ var handleEvents = function(err, data) {
 // https://dev.netatmo.com/dev/resources/technical/reference/cameras/gethomedata
 api.getHomeData();
 
-// Get Next Events
-// See docs: https://dev.netatmo.com/dev/resources/technical/reference/cameras/getnextevents
-var options = {
-    home_id: '5a1a38b9b26ddfafc58bf1df',
-    event_id: ''
-};
+// // Get Next Events
+// // See docs: https://dev.netatmo.com/dev/resources/technical/reference/cameras/getnextevents
+// var options = {
+//     home_id: '5a1a38b9b26ddfafc58bf1df',
+//     event_id: ''
+// };
 
-api.getNextEvents(options);
+// api.getNextEvents(options);
 
-// Get Last Event Of
-// See docs: https://dev.netatmo.com/dev/resources/technical/reference/cameras/getlasteventof
-var options = {
-    home_id: '5a1a38b9b26ddfafc58bf1df',
-    person_id: ''
-};
+// // Get Last Event Of
+// // See docs: https://dev.netatmo.com/dev/resources/technical/reference/cameras/getlasteventof
+// var options = {
+//     home_id: '5a1a38b9b26ddfafc58bf1df',
+//     person_id: ''
+// };
 
-api.getLastEventOf(options);
+// api.getLastEventOf(options);
 
-// Get Events Until
-// See docs: https://dev.netatmo.com/dev/resources/technical/reference/cameras/geteventsuntil
-var options = {
-    home_id: '5a1a38b9b26ddfafc58bf1df',
-    event_id: '',
-};
+// // Get Events Until
+// // See docs: https://dev.netatmo.com/dev/resources/technical/reference/cameras/geteventsuntil
+// var options = {
+//     home_id: '5a1a38b9b26ddfafc58bf1df',
+//     event_id: '',
+// };
 
-api.getEventsUntil(options);
+// api.getEventsUntil(options);
 
-// Get Camera Picture
-// See docs: https://dev.netatmo.com/dev/resources/technical/reference/cameras/getcamerapicture
-var options = {
-    image_id: '',
-    key: ''
-};
+// // Get Camera Picture
+// // See docs: https://dev.netatmo.com/dev/resources/technical/reference/cameras/getcamerapicture
+// var options = {
+//     image_id: '',
+//     key: ''
+// };
 
-api.getCameraPicture(options);
+// api.getCameraPicture(options);
 
 
 // Event Listeners
