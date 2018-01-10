@@ -68,7 +68,7 @@ var getStationsData = function(err, devices) {
     } else {
         health.unhealthyEvent()
     }
-    
+
     console.log(devices);
     logging.info(devices)
     const station = devices[0]
@@ -166,6 +166,7 @@ function processModule(module) {
     const name = module.module_name
     const data = module.dashboard_data
     logging.info('Looking at module: ' + name)
+    health.healthyEvent()
 
     const batteryPercent = module.battery_percent
     if (batteryPercent !== undefined) {
