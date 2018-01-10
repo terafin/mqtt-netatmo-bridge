@@ -6,6 +6,8 @@ const _ = require('lodash')
 const logging = require('homeautomation-js-lib/logging.js')
 require('homeautomation-js-lib/mqtt_helpers.js')
 
+const health = require('homeautomation-js-lib/health.js')
+
 
 // Config
 const webhook_url = process.env.WEBHOOK_URL
@@ -51,6 +53,8 @@ var api = new netatmo(auth)
 api.on("error", function(error) {
     // When the "error" event is emitted, this is called
     console.error('Netatmo threw an error: ' + error);
+    health.unhealthyEvent()
+
 });
 
 api.on("warning", function(error) {
@@ -59,6 +63,12 @@ api.on("warning", function(error) {
 });
 
 var getStationsData = function(err, devices) {
+    if ( _.isNil(err) ) {
+        health.healthyEvent()
+    } else {
+        health.unhealthyEvent()
+    }
+    
     console.log(devices);
     logging.info(devices)
     const station = devices[0]
