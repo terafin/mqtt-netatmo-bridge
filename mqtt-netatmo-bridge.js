@@ -47,36 +47,51 @@ var auth = {
     'password': netatmo_pass,
 }
 
-var api = new netatmo(auth)
+var api = null
+
+
+reconnect()
+
+function reconnect() {
+    logging.info('connecting')
+    api = new netatmo(auth)
+}
 
 
 api.on("error", function(error) {
     // When the "error" event is emitted, this is called
-    console.error('Netatmo threw an error: ' + error);
+    logging.error('Netatmo threw an error: ' + error);
     health.unhealthyEvent()
-
+    reconnect()
 });
 
 api.on("warning", function(error) {
     // When the "warning" event is emitted, this is called
-    console.log('Netatmo threw a warning: ' + error);
+    logging.log('Netatmo threw a warning: ' + error);
+    health.unhealthyEvent()
+    reconnect()
 });
 
 var getStationsData = function(err, devices) {
     if ( _.isNil(err) ) {
         health.healthyEvent()
+        logging.info('loaded station data')
     } else {
         health.unhealthyEvent()
+        logging.error('unable to get stations data: ' + err)
+        return
     }
 
-    console.log(devices);
     logging.info(devices)
     const station = devices[0]
     const foundModules = station.modules
 
     processModule(station)
 
-    if (_.isNil(foundModules)) return
+    if (_.isNil(foundModules)) {
+        logging.error('no modules found: ' + stations)
+        return
+    }
 
     foundModules.forEach(function(module) {
         processModule(module)
@@ -215,7 +230,7 @@ function refreshToken() {
 function startMonitoring() {
     logging.info('Starting netatmo <-> MQTT')
     repeat(pollData).every(30, 's').start.in(1, 'sec')
-    repeat(refreshToken).every(30, 'm').start.in(30, 'sec')
+    repeat(refreshToken).every(25, 'm').start.in(30, 'sec')
 }
 
 startMonitoring()
