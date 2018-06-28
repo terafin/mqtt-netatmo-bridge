@@ -201,20 +201,6 @@ function processModule(module) {
         }
     }, this)
 }
-var stationResponse = function(err, devices) {
-    logging.info(devices)
-    const station = devices[0]
-    const foundModules = station.modules
-
-    processModule(station)
-
-    if (_.isNil(foundModules)) return
-
-    foundModules.forEach(function(module) {
-        processModule(module)
-    }, this)
-
-}
 
 function pollData() {
     logging.info('Polling for new info')
