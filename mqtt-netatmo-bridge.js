@@ -205,7 +205,7 @@ function processModule(module) {
 function pollData() {
     logging.info('Polling for new info')
 
-    api.getStationsData()
+    api.getStationsData(getStationsData)
 }
 
 function refreshToken() {
