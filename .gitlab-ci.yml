@@ -14,6 +14,15 @@ build-master:
   only:
     - master
 
+build-master-docker:
+  stage: build
+  script:
+    - docker login -u "$DOCKER_REGISTRY_USER" -p "$DOCKER_REGISTRY_PASSWORD"
+    - docker build --pull -t "$DOCKER_REGISTRY_IMAGE" .
+    - docker push "$DOCKER_REGISTRY_IMAGE"
+  only:
+    - master
+
 build:
   stage: build
   script:
