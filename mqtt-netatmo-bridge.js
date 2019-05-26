@@ -76,13 +76,12 @@ var auth = {
 var api = null
 
 
-reconnect()
-
 const reconnect = function() {
 	logging.info('connecting')
 	api = new netatmo(auth)
 }
 
+reconnect()
 
 api.on('error', function(error) {
 	// When the "error" event is emitted, this is called
@@ -248,7 +247,6 @@ const startMonitoring = function() {
 }
 
 startMonitoring()
-
 
 const express = require('express')
 
