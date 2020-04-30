@@ -1,24 +1,28 @@
 {
-    "name": "mqtt-netatmo-bridge",
-    "version": "0.0.1",
-    "description": "Bridge netatmo to and from MQTT",
-    "license": "MIT",
-    "main": "mqtt-netatmo-bridge.js",
-    "repository": {
-        "url": "https://github.com/terafin/mqtt-netatmo-bridge"
-    },
-    "scripts": {
-        "start": "node mqtt-netatmo-bridge.js"
-    },
-    "dependencies": {
-        "express": "latest",
-        "homeautomation-js-lib": "https://github.com/terafin/homeautomation-js-lib.git",
-        "lodash": "^4.17.15",
-        "mqtt": "latest",
-        "netatmo": "latest",
-        "repeat": "0.0.6"
-    },
-    "engines": {
-        "node": ">=4"
-    }
+  "name": "mqtt-netatmo-bridge",
+  "version": "0.0.1",
+  "description": "Bridge netatmo to and from MQTT",
+  "license": "MIT",
+  "main": "mqtt-netatmo-bridge.js",
+  "repository": {
+    "url": "https://github.com/terafin/mqtt-netatmo-bridge"
+  },
+  "scripts": {
+    "start": "node mqtt-netatmo-bridge.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
+  },
+  "dependencies": {
+    "express": "latest",
+    "homeautomation-js-lib": "https://github.com/terafin/homeautomation-js-lib.git",
+    "lodash": "^4.17.15",
+    "mqtt": "latest",
+    "netatmo": "latest",
+    "repeat": "0.0.6",
+    "snyk": "^1.316.1"
+  },
+  "engines": {
+    "node": ">=4"
+  },
+  "snyk": true
 }
