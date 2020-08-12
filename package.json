@@ -16,7 +16,7 @@
         "lodash": "^4.17.19",
         "mqtt": "latest",
         "netatmo": "latest",
-        "repeat": "0.0.6"
+        "repeat": "1.2.0"
     },
     "engines": {
         "node": ">=4"
