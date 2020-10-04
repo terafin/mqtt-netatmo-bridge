@@ -16,7 +16,7 @@ const netatmo_user = process.env.NETATMO_USER
 const netatmo_pass = process.env.NETATMO_PASS
 const netatmo_client_id = process.env.NETATMO_CLIENT_ID
 const netatmo_client_secret = process.env.NETATMO_CLIENT_SECRET
-const topicPrefix = process.env.NETATMO_TOPIC
+const topicPrefix = process.env.TOPIC_PREFIX
 
 // Setup MQTT
 const client = mqtt_helpers.setupClient(null, null)
@@ -206,27 +206,18 @@ const processModule = function(module) {
     const name = module.module_name
     const data = module.dashboard_data
     logging.info('Looking at module: ' + name)
+    logging.info('   data: ' + JSON.stringify(data))
     health.healthyEvent()
 
     const batteryPercent = module.battery_percent
-    if (batteryPercent !== undefined) {
-        const batteryTopic = [topicPrefix, 'battery', name].join('/')
-        client.smartPublish('' + batteryTopic, '' + batteryPercent, { retain: true })
+    if (!_.isNil(batteryPercent)) {
+        const batteryTopic = mqtt_helpers.generateTopic(topicPrefix, name, 'battery')
+        client.smartPublish(batteryTopic, batteryPercent, { retain: true })
     }
 
-    if (_.isNil(data)) {
-        return
-    }
-
-    Object.keys(data).forEach(function(dataKey) {
-        const publishKey = isInterestingDataPoint(dataKey)
-        if (!_.isNil(publishKey)) {
-            const value = data[dataKey]
-            const topicToPublish = [topicPrefix, publishKey, name].join('/')
-
-            client.smartPublish('' + topicToPublish, '' + value, { retain: true })
-        }
-    }, this)
+    logging.info('starting smart publish')
+    client.smartPublishCollection(mqtt_helpers.generateTopic(topicPrefix, name), data, [], { retain: true })
+    logging.info('done')
 }
 
 const pollData = function() {
