@@ -11,6 +11,12 @@ I have a collection of bridges, and the general format of these begins with thes
       (OPTIONAL) MQTT_PASS: YOUR_MQTT_PASSWORD
 ```
 
+## Documentation
+Thanks to @skyynet for some documentation for how to set this up on a Synology NAS (but likely applies to more)!
+* English: https://skyynet.de/e-netatmo
+* German: https://skyynet.de/netatmo
+
+## Docker Compose
 Here's an example docker compose:
 
 ```yaml
