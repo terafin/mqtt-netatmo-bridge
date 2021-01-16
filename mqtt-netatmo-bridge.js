@@ -6,9 +6,8 @@ const interval = require('interval-promise')
 const _ = require('lodash')
 const logging = require('homeautomation-js-lib/logging.js')
 const mqtt_helpers = require('homeautomation-js-lib/mqtt_helpers.js')
-
 const health = require('homeautomation-js-lib/health.js')
-
+const { publishHADiscoveryConfigs, normalize } = require('./ha-mqtt-auto-discovery')
 
 // Config
 // const webhook_url = process.env.WEBHOOK_URL
@@ -19,6 +18,7 @@ const netatmo_client_id = process.env.NETATMO_CLIENT_ID
 const netatmo_client_secret = process.env.NETATMO_CLIENT_SECRET
 const topicPrefix = process.env.TOPIC_PREFIX
 const pollIntervalSeconds = process.env.POLL_INTERVAL_SECONDS || 60
+const retainValues = process.env.RETAIN_VALUES || true
 
 // Setup MQTT
 const client = mqtt_helpers.setupClient(null, null)
@@ -77,7 +77,6 @@ var auth = {
 
 var api = null
 
-
 const reconnect = function() {
     logging.info('connecting')
     api = new netatmo(auth)
@@ -116,19 +115,21 @@ var getStationsData = function(err, devices) {
 }
 
 var processStation = function(station) {
-    const stationName = station.home_name.toLowerCase()
-    logging.info(`Processing station ${stationName}`)
+    logging.info(`Processing station ${station.station_name}`)
+
+    // when enabled, published HomeAssistant MQTT Discovery configs
+    publishHADiscoveryConfigs(client, station)
+
+    processModule(station, station)
+
     const foundModules = station.modules
-
-    processModule(stationName, station)
-
     if (_.isNil(foundModules)) {
         logging.error('no modules found: ' + stations)
         return
     }
 
     foundModules.forEach(function(module) {
-        processModule(stationName, module)
+        processModule(station, module)
     }, this)
 }
 
@@ -209,21 +210,23 @@ api.on('get-nextevents', handleEvents)
 api.on('get-lasteventof', handleEvents)
 api.on('get-eventsuntil', handleEvents)
 
-const processModule = function(stationName, module) {
+
+const processModule = function(station, module) {
     const name = module.module_name
-    const data = module.dashboard_data
-    logging.info(`Looking at module: ${stationName}.${name}`)
+    const data = {
+        ...module.dashboard_data,
+        ...(module.battery_percent && { battery: module.battery_percent }),
+        ...(module.rf_status && { rf_status: module.rf_status  }),
+        ...(module.wifi_status && { wifi_status: module.wifi_status })
+    }
+    logging.info(`Looking at module: ${station.station_name}.${name}`)
     logging.info('   data: ' + JSON.stringify(data))
+    logging.debug('module:')
+    logging.debug(module)
     health.healthyEvent()
 
-    const batteryPercent = module.battery_percent
-    if (!_.isNil(batteryPercent)) {
-        const batteryTopic = mqtt_helpers.generateTopic(topicPrefix, stationName, name, 'battery')
-        client.smartPublish(batteryTopic, batteryPercent, { retain: true })
-    }
-
     logging.info('starting smart publish')
-    client.smartPublishCollection(mqtt_helpers.generateTopic(topicPrefix, stationName, name), data, [], { retain: true })
+    client.smartPublishCollection(mqtt_helpers.generateTopic(topicPrefix, normalize(station.station_name), name), data, [], { retain: retainValues })
     logging.info('done')
 }
 
