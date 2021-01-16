@@ -109,11 +109,18 @@ var getStationsData = function(err, devices) {
         return
     }
 
+    logging.info('devices:')
     logging.info(devices)
-    const station = devices[0]
+
+    devices.forEach(processStation)
+}
+
+var processStation = function(station) {
+    const stationName = station.home_name.toLowerCase()
+    logging.info(`Processing station ${stationName}`)
     const foundModules = station.modules
 
-    processModule(station)
+    processModule(stationName, station)
 
     if (_.isNil(foundModules)) {
         logging.error('no modules found: ' + stations)
@@ -121,7 +128,7 @@ var getStationsData = function(err, devices) {
     }
 
     foundModules.forEach(function(module) {
-        processModule(module)
+        processModule(stationName, module)
     }, this)
 }
 
@@ -202,23 +209,21 @@ api.on('get-nextevents', handleEvents)
 api.on('get-lasteventof', handleEvents)
 api.on('get-eventsuntil', handleEvents)
 
-
-
-const processModule = function(module) {
+const processModule = function(stationName, module) {
     const name = module.module_name
     const data = module.dashboard_data
-    logging.info('Looking at module: ' + name)
+    logging.info(`Looking at module: ${stationName}.${name}`)
     logging.info('   data: ' + JSON.stringify(data))
     health.healthyEvent()
 
     const batteryPercent = module.battery_percent
     if (!_.isNil(batteryPercent)) {
-        const batteryTopic = mqtt_helpers.generateTopic(topicPrefix, name, 'battery')
+        const batteryTopic = mqtt_helpers.generateTopic(topicPrefix, stationName, name, 'battery')
         client.smartPublish(batteryTopic, batteryPercent, { retain: true })
     }
 
     logging.info('starting smart publish')
-    client.smartPublishCollection(mqtt_helpers.generateTopic(topicPrefix, name), data, [], { retain: true })
+    client.smartPublishCollection(mqtt_helpers.generateTopic(topicPrefix, stationName, name), data, [], { retain: true })
     logging.info('done')
 }
 
