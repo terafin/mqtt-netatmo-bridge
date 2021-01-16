@@ -11,11 +11,12 @@
         "start": "node mqtt-netatmo-bridge.js"
     },
     "dependencies": {
+        "dotenv": "^8.2.0",
         "homeautomation-js-lib": "https://github.com/terafin/homeautomation-js-lib.git",
+        "interval-promise": "latest",
         "lodash": "latest",
         "mqtt": "latest",
-        "netatmo": "latest",
-        "interval-promise": "latest"
+        "netatmo": "latest"
     },
     "engines": {
         "node": ">=4"

@@ -1,4 +1,5 @@
 // Requirements
+require('dotenv').config()
 const mqtt = require('mqtt')
 const netatmo = require('netatmo')
 const interval = require('interval-promise')
@@ -10,13 +11,14 @@ const health = require('homeautomation-js-lib/health.js')
 
 
 // Config
-const webhook_url = process.env.WEBHOOK_URL
-const webhook_port = process.env.WEBHOOK_PORT
+// const webhook_url = process.env.WEBHOOK_URL
+// const webhook_port = process.env.WEBHOOK_PORT
 const netatmo_user = process.env.NETATMO_USER
 const netatmo_pass = process.env.NETATMO_PASS
 const netatmo_client_id = process.env.NETATMO_CLIENT_ID
 const netatmo_client_secret = process.env.NETATMO_CLIENT_SECRET
 const topicPrefix = process.env.TOPIC_PREFIX
+const pollIntervalSeconds = process.env.POLL_INTERVAL_SECONDS || 60
 
 // Setup MQTT
 const client = mqtt_helpers.setupClient(null, null)
@@ -237,11 +239,11 @@ const startMonitoring = function() {
     pollData()
     interval(async() => {
         pollData()
-    }, 30 * 1000)
+    }, pollIntervalSeconds * 1000)
 
     interval(async() => {
         refreshToken()
-    }, 25 * 1000)
+    }, (pollIntervalSeconds - 5) * 1000)
 }
 
 startMonitoring()

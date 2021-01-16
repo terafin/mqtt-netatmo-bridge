@@ -11,6 +11,12 @@ I have a collection of bridges, and the general format of these begins with thes
       (OPTIONAL) MQTT_PASS: YOUR_MQTT_PASSWORD
 ```
 
+## Running locally
+
+When running this project locally, the settings can be set in a  `.env` file.
+Copy the `.env.sample` to `.env` and adjust the Netatmo and MQTT settings according to your environment.
+Then run `npm start`.
+
 ## Documentation
 Thanks to @skyynet for some documentation for how to set this up on a Synology NAS (but likely applies to more)!
 * English: https://skyynet.de/e-netatmo
