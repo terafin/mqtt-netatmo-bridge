@@ -11,6 +11,12 @@ I have a collection of bridges, and the general format of these begins with thes
       (OPTIONAL) MQTT_PASS: YOUR_MQTT_PASSWORD
 ```
 
+## Home Assistant Support
+
+This service can automatically publish configurations so Home Assistant will automatically discovery all properties.
+For each module, a new device is created.
+[Read more](HomeAssistant.md)
+
 ## Running locally
 
 When running this project locally, the settings can be set in a  `.env` file.
