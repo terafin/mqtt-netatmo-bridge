@@ -246,12 +246,9 @@ const startMonitoring = function() {
 
     pollData()
     interval(async() => {
+        // no need to refresh the token, since it's done by Netatmo lib
         pollData()
     }, pollIntervalSeconds * 1000)
-
-    interval(async() => {
-        refreshToken()
-    }, (pollIntervalSeconds - 5) * 1000)
 }
 
 startMonitoring()
