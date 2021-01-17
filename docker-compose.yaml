@@ -1,0 +1,6 @@
+version: "3"
+services:
+  mqtt-netatmo-bridge:
+    image: diversit/mqtt-netatmo-bridge
+    build: .
+    env_file: .env
