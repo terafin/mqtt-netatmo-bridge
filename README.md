@@ -38,6 +38,7 @@ services:
     image: terafin/mqtt-netatmo-bridge:latest
     environment:
       LOGGING_NAME: mqtt-netatmo-bridge
+      LOG_LEVEL: info
       TZ: YOUR_TIMEZONE (eg: America/Los_Angeles)
       TOPIC_PREFIX: /your_topic_prefix  (eg: /netatmo)
       NETATMO_USER: YOUR_NETATMO_USERNAME,
@@ -45,8 +46,13 @@ services:
       NETATMO_CLIENT_ID: YOUR_NETATMO_CLIENT_ID,
       NETATMO_CLIENT_SECRET: YOUR_NETATMO_CLIENT_SECRET,
       MQTT_HOST: YOUR_MQTT_URL (eg: mqtt://mqtt.yourdomain.net)
+      MQTT_STATUS_TOPIC_PREFIX: /status/ (set to fix issue when not set)
       (OPTIONAL) MQTT_USER: YOUR_MQTT_USERNAME
       (OPTIONAL) MQTT_PASS: YOUR_MQTT_PASSWORD
+      (OPTIONAL) MQTT_NAME: netatmo-bridge
+      (OPTIONAL) POLL_INTERVAL: 300 (every 5min more than enough)
+      (OPTIONAL) RETAIN_VALUES: true (whether to retain the sensor values)
+      (OPTIONAL) HOME_ASSISTANT_AUTO_DISCOVERY: true
       (OPTIONAL) HEALTH_CHECK_PORT: "3001"
       (OPTIONAL) HEALTH_CHECK_TIME: "120"
       (OPTIONAL) HEALTH_CHECK_URL: /healthcheck
@@ -55,71 +61,71 @@ services:
 Here's an example publish for my setup:
 
 ```log
-/netatmo/atrium/time_utc 1601834374
-/netatmo/atrium/temperature 23.4
-/netatmo/atrium/co2 487
-/netatmo/atrium/humidity 49
-/netatmo/atrium/noise 43
-/netatmo/atrium/pressure 1013.9
-/netatmo/atrium/absolutepressure 1006.9
-/netatmo/atrium/min_temp 23.4
-/netatmo/atrium/max_temp 24.8
-/netatmo/atrium/date_max_temp 1601795086
-/netatmo/atrium/date_min_temp 1601831351
-/netatmo/atrium/temp_trend stable
-/netatmo/atrium/pressure_trend stable
-/netatmo/outdoor/battery 72
-/netatmo/outdoor/time_utc 1601834332
-/netatmo/outdoor/temperature 22.2
-/netatmo/outdoor/humidity 70
-/netatmo/outdoor/min_temp 15.6
-/netatmo/outdoor/max_temp 22.2
-/netatmo/outdoor/date_max_temp 1601834332
-/netatmo/outdoor/date_min_temp 1601820746
-/netatmo/outdoor/temp_trend up
-/netatmo/rain_sensor/battery 85
-/netatmo/rain_sensor/time_utc 1601834364
-/netatmo/rain_sensor/rain 0
-/netatmo/rain_sensor/sum_rain_1 0
-/netatmo/rain_sensor/sum_rain_24 0
-/netatmo/wind_sensor/battery 46
-/netatmo/wind_sensor/time_utc 1601834371
-/netatmo/wind_sensor/windstrength 3
-/netatmo/wind_sensor/windangle 241
-/netatmo/wind_sensor/guststrength 8
-/netatmo/wind_sensor/gustangle 249
-/netatmo/wind_sensor/max_wind_str 17
-/netatmo/wind_sensor/max_wind_angle 223
-/netatmo/wind_sensor/date_max_wind_str 1601795689
-/netatmo/bedroom/battery 46
-/netatmo/bedroom/time_utc 1601834371
-/netatmo/bedroom/temperature 20.9
-/netatmo/bedroom/co2 556
-/netatmo/bedroom/humidity 60
-/netatmo/bedroom/min_temp 19.3
-/netatmo/bedroom/max_temp 21
-/netatmo/bedroom/date_max_temp 1601833755
-/netatmo/bedroom/date_min_temp 1601795048
-/netatmo/bedroom/temp_trend up
-/netatmo/living_room/battery 24
-/netatmo/living_room/time_utc 1601834371
-/netatmo/living_room/temperature 21
-/netatmo/living_room/co2 572
-/netatmo/living_room/humidity 59
-/netatmo/living_room/min_temp 20.2
-/netatmo/living_room/max_temp 21.4
-/netatmo/living_room/date_max_temp 1601797764
-/netatmo/living_room/date_min_temp 1601826475
-/netatmo/living_room/temp_trend stable
-/netatmo/entrance/battery 100
-/netatmo/entrance/time_utc 1601834364
-/netatmo/entrance/temperature 20.3
-/netatmo/entrance/co2 556
-/netatmo/entrance/humidity 59
-/netatmo/entrance/min_temp 19.7
-/netatmo/entrance/max_temp 20.9
-/netatmo/entrance/date_max_temp 1601797758
-/netatmo/entrance/date_min_temp 1601824059
-/netatmo/entrance/temp_trend down
+/netatmo/mystation/atrium/time_utc 1601834374
+/netatmo/mystation/atrium/temperature 23.4
+/netatmo/mystation/atrium/co2 487
+/netatmo/mystation/atrium/humidity 49
+/netatmo/mystation/atrium/noise 43
+/netatmo/mystation/atrium/pressure 1013.9
+/netatmo/mystation/atrium/absolutepressure 1006.9
+/netatmo/mystation/atrium/min_temp 23.4
+/netatmo/mystation/atrium/max_temp 24.8
+/netatmo/mystation/atrium/date_max_temp 1601795086
+/netatmo/mystation/atrium/date_min_temp 1601831351
+/netatmo/mystation/atrium/temp_trend stable
+/netatmo/mystation/atrium/pressure_trend stable
+/netatmo/mystation/outdoor/battery 72
+/netatmo/mystation/outdoor/time_utc 1601834332
+/netatmo/mystation/outdoor/temperature 22.2
+/netatmo/mystation/outdoor/humidity 70
+/netatmo/mystation/outdoor/min_temp 15.6
+/netatmo/mystation/outdoor/max_temp 22.2
+/netatmo/mystation/outdoor/date_max_temp 1601834332
+/netatmo/mystation/outdoor/date_min_temp 1601820746
+/netatmo/mystation/outdoor/temp_trend up
+/netatmo/mystation/rain_sensor/battery 85
+/netatmo/mystation/rain_sensor/time_utc 1601834364
+/netatmo/mystation/rain_sensor/rain 0
+/netatmo/mystation/rain_sensor/sum_rain_1 0
+/netatmo/mystation/rain_sensor/sum_rain_24 0
+/netatmo/mystation/wind_sensor/battery 46
+/netatmo/mystation/wind_sensor/time_utc 1601834371
+/netatmo/mystation/wind_sensor/windstrength 3
+/netatmo/mystation/wind_sensor/windangle 241
+/netatmo/mystation/wind_sensor/guststrength 8
+/netatmo/mystation/wind_sensor/gustangle 249
+/netatmo/mystation/wind_sensor/max_wind_str 17
+/netatmo/mystation/wind_sensor/max_wind_angle 223
+/netatmo/mystation/wind_sensor/date_max_wind_str 1601795689
+/netatmo/mystation/bedroom/battery 46
+/netatmo/mystation/bedroom/time_utc 1601834371
+/netatmo/mystation/bedroom/temperature 20.9
+/netatmo/mystation/bedroom/co2 556
+/netatmo/mystation/bedroom/humidity 60
+/netatmo/mystation/bedroom/min_temp 19.3
+/netatmo/mystation/bedroom/max_temp 21
+/netatmo/mystation/bedroom/date_max_temp 1601833755
+/netatmo/mystation/bedroom/date_min_temp 1601795048
+/netatmo/mystation/bedroom/temp_trend up
+/netatmo/mystation/living_room/battery 24
+/netatmo/mystation/living_room/time_utc 1601834371
+/netatmo/mystation/living_room/temperature 21
+/netatmo/mystation/living_room/co2 572
+/netatmo/mystation/living_room/humidity 59
+/netatmo/mystation/living_room/min_temp 20.2
+/netatmo/mystation/living_room/max_temp 21.4
+/netatmo/mystation/living_room/date_max_temp 1601797764
+/netatmo/mystation/living_room/date_min_temp 1601826475
+/netatmo/mystation/living_room/temp_trend stable
+/netatmo/mystation/entrance/battery 100
+/netatmo/mystation/entrance/time_utc 1601834364
+/netatmo/mystation/entrance/temperature 20.3
+/netatmo/mystation/entrance/co2 556
+/netatmo/mystation/entrance/humidity 59
+/netatmo/mystation/entrance/min_temp 19.7
+/netatmo/mystation/entrance/max_temp 20.9
+/netatmo/mystation/entrance/date_max_temp 1601797758
+/netatmo/mystation/entrance/date_min_temp 1601824059
+/netatmo/mystation/entrance/temp_trend down
 
 ```

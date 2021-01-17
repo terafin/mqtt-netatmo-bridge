@@ -236,11 +236,6 @@ const pollData = function() {
     api.getStationsData(getStationsData)
 }
 
-const refreshToken = function() {
-    logging.info('Refreshing login token')
-    api = new netatmo(auth)
-}
-
 const startMonitoring = function() {
     logging.info('Starting netatmo <-> MQTT')
 
