@@ -10,7 +10,7 @@
         "guststrength": "Wind gust strength",
         "humidity": "Humidity",
         "max_wind_angle": "Wind max angle",
-        "max_wind_strength": "Wind max strength",
+        "max_wind_str": "Wind max strength",
         "max_temp": "Highest temperature",
         "min_temp": "Lowest temperature",
         "noise": "Noise level",
@@ -46,10 +46,27 @@
         "wifi_status": "%",
         "windstrength": "kph"
     },
-    "deviceClasses": {
+    "icons": {
         "co2": "mdi:molecule-co2",
+        "guststrength": "mdi:weather-windy",
         "noise": "mdi:volume-high",
         "max_wind_str": "mdi:weather-windy",
+        "rain": "mdi:weather-rainy",
+        "rf_status": "mdi:radio-tower",
+        "sum_rain_1": "mdi:weather-rainy",
+        "sum_rain_24": "mdi:weather-rainy",
+        "wifi_status": "mdi:wifi",
         "windstrength": "mdi:weather-windy"
+    },
+    "deviceClasses": {
+        "absolutepressure": "pressure",
+        "battery": "battery",
+        "humidity": "humidity",
+        "min_temp": "temperature",
+        "max_temp": "temperature",
+        "pressure": "pressure",
+        "rf_status": "signal_strength",
+        "temperature": "temperature",
+        "wifi_status": "signal_strength"
     }
 }

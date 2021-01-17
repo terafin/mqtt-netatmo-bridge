@@ -38,7 +38,8 @@ const createHASensorConfig = function(station, module, propertyName) {
         name: `Netatmo ${station.station_name} ${module.module_name} ${haSensorConfig.translations[propertyName.toLowerCase()]}`,
         state_topic: mqtt_helpers.generateTopic(topicPrefix, normalize(station.station_name), module.module_name, propertyName),
         ...(haSensorConfig.unitOfMeasurements[propertyName.toLowerCase()] && { unit_of_measurement: haSensorConfig.unitOfMeasurements[propertyName.toLowerCase()] }),
-        ...(haSensorConfig.deviceClasses[propertyName.toLowerCase()] && { device_class: haSensorConfig.deviceClasses[propertyName.toLowerCase()] })
+        ...(haSensorConfig.deviceClasses[propertyName.toLowerCase()] && { device_class: haSensorConfig.deviceClasses[propertyName.toLowerCase()] }),
+        ...(haSensorConfig.icons[propertyName.toLowerCase()] && { icon: haSensorConfig.icons[propertyName.toLowerCase()] })
     }
 }
 

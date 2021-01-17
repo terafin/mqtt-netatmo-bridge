@@ -80,6 +80,8 @@ Sensor config:
 In Home Assistant, each module is represented as a device with multiple sensor entities.
 Here an overview of (Weather Station) modules, the available properties and the 'unit_of_measurement', 'device_class' and/or 'icon' to be used in the HA config.
 
+_Note: not using the 'timestamp' device_class since it does not work with timestamps in seconds._
+
 ## Station module
 
 | property | e.g. value | unit of measurement | device_class | icon |
@@ -98,7 +100,7 @@ Here an overview of (Weather Station) modules, the available properties and the 
 | temp_trend | 'stable' | | | |
 | temperature | 18.3 |  °C               | temperature | |
 | time_utc | \<timestamp> | | | |
-| wifi_status | 56 | | | mdi:wifi |
+| wifi_status | 56 | | signal_strength | mdi:wifi |
 
 ## Indoor module
 
@@ -111,7 +113,7 @@ Here an overview of (Weather Station) modules, the available properties and the 
 | date_max_temp | \<timestamp> | | | |
 | min_temp | 17.8 | °C               | temperature | |
 | max_temp | 21.4 | °C               | temperature | |
-| rf_status | 47 | | | mdi:radio-tower |
+| rf_status | 47 | | signal_strength | mdi:radio-tower |
 | temp_trend | 'stable' | | | |
 | temperature | 18.3 |  °C               | temperature | |
 | time_utc | \<timestamp> | | | |
@@ -126,7 +128,7 @@ Here an overview of (Weather Station) modules, the available properties and the 
 | date_max_temp | \<timestamp> | | | |
 | min_temp | 17.8 | °C               | temperature | |
 | max_temp | 21.4 | °C               | temperature | |
-| rf_status | 47 | | | mdi:radio-tower |
+| rf_status | 47 | | signal_strength | mdi:radio-tower |
 | temp_trend | 'stable' | | | |
 | temperature | 18.3 |  °C               | temperature | |
 | time_utc | \<timestamp> | | | |
@@ -138,10 +140,10 @@ Here an overview of (Weather Station) modules, the available properties and the 
 | battery  | 77 | %                   | battery      | |
 | date_max_wind_str | \<timestamp> | | | |
 | gustangle | 231 | | |
-| guststrength | 12 | kph | mdi:weather-windy |
+| guststrength | 12 | kph | | mdi:weather-windy |
 | max_wind_angle | 140 | | |
 | max_wind_str | 13 | kph | | mdi:weather-windy | 
-| rf_status | 47 | | | mdi:radio-tower |
+| rf_status | 47 | | signal_strength | mdi:radio-tower |
 | time_utc | \<timestamp> | | | |
 | windangle | 225 | | |
 | windstrength | 3 | kph | | mdi:weather-windy |
@@ -152,7 +154,7 @@ Here an overview of (Weather Station) modules, the available properties and the 
 |----------|---|---------------------|--------------|------|
 | battery  | 77 | %                   | battery      | |
 | rain | 0 | mm | | mdi:weather-rainy |
-| rf_status | 47 | | | mdi:radio-tower |
+| rf_status | 47 | | signal_strength | mdi:radio-tower |
 | sum_rain_1 | 0 | mm | | mdi:weather-rainy |
 | sum_rain_24 | 0 | mm | | mdi:weather-rainy |
 | time_utc | \<timestamp> | | | |
