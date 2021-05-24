@@ -8,8 +8,10 @@ const mqtt_helpers = require('homeautomation-js-lib/mqtt_helpers.js')
 
 const homeAssistantDiscoveryPrefix = process.env.HOMEASSISTANT_DISCOVERY_PREFIX || 'homeassistant'
 const homeAssistantAutoDiscovery = process.env.HOMEASSISTANT_AUTO_DISCOVERY || false
-const mqttStatusTopicPrefix = process.env.MQTT_STATUS_TOPIC_PREFIX || '/status'
+const mqttStatusTopicPrefix = process.env.MQTT_STATUS_TOPIC_PREFIX || 'status/'
+const mqttName = process.env.MQTT_NAME
 const topicPrefix = process.env.TOPIC_PREFIX
+const retainMessage = true
 
 const normalize = function(s) {
     return s.replace('(','')
@@ -19,7 +21,7 @@ const normalize = function(s) {
 }
 
 /** Create the device config for HomeAssitant MQTT Auto Discovery */
-const createHASensorDeviceConfig = function(station, module) {
+const createHADeviceConfig = function(station, module) {
     return {
         identifiers: module._id,
         manufacturer: "Netatmo",
@@ -33,7 +35,7 @@ const createHASensorDeviceConfig = function(station, module) {
 /** Creates a sensor config for HomeAssistant MQTT Auto Discovery */
 const createHASensorConfig = function(station, module, propertyName) {
     return {
-        device: createHASensorDeviceConfig(station, module),
+        device: createHADeviceConfig(station, module),
         unique_id: `mqtt_netatmo_${normalize(station.station_name)}_${normalize(module.module_name)}_${normalize(propertyName)}`,
         name: `Netatmo ${station.station_name} ${module.module_name} ${haSensorConfig.translations[propertyName.toLowerCase()]}`,
         state_topic: mqtt_helpers.generateTopic(topicPrefix, normalize(station.station_name), module.module_name, propertyName),
@@ -65,7 +67,7 @@ const publishSensorConfigsForModule = function(mqttClient, station, module) {
         const configTopic = `${homeAssistantDiscoveryPrefix}/sensor/netatmo-bridge/${normalize(station.station_name)}_${normalize(module.module_name)}_${normalize(pn)}/config`
         logging.debug(`config topic: ${configTopic}`)
 
-        mqttClient.smartPublish(configTopic, prettyPrint(sensorConfig), { retain: false })
+        mqttClient.smartPublish(configTopic, prettyPrint(sensorConfig), { retain: retainMessage })
     })
 }
 
@@ -89,14 +91,14 @@ const publishHADiscoveryConfigs = function(mqttClient, station) {
             device_class: "connectivity",
             unique_id: "mqtt_netatmo_bridge",
             name: "MQTT Netatmo Bridge Status",
-            state_topic: `${mqttStatusTopicPrefix}netatmo_bridge`,
+            state_topic: `${mqttStatusTopicPrefix}${mqttName}`,
             payload_off: "0",
             payload_on: "1"
         }
         const bridgeConfigTopic = `${homeAssistantDiscoveryPrefix}/binary_sensor/netatmo-bridge/netatmo-bridge/config`
         logging.debug(`Publishing bridge sensor config to topic: ${bridgeConfigTopic}`)
         logging.debug(bridgeConfig)
-        mqttClient.smartPublish(bridgeConfigTopic, prettyPrint(bridgeConfig), { retain: false })
+        mqttClient.smartPublish(bridgeConfigTopic, prettyPrint(bridgeConfig), { retain: retainMessage })
 
         // publis config for station (which is also a module)
         publishSensorConfigsForModule(mqttClient, station, station)

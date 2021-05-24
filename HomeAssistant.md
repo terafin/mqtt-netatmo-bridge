@@ -56,8 +56,8 @@ A separate binary sensor is added to monitor the mqtt-netatmo-bridge state in Ho
 On startup, the bridge publishes a '1' to the status topic.
 Whenever the bridge stops, a '0' is published to the status topic.
 
-The status topic is: /`MQTT_STATUS_TOPIC_PREFIX`/netatmo_bridge.  
-Default value for `MQTT_STATUS_TOPIC_PREFIX` is `/status/`.
+The status topic is: `MQTT_STATUS_TOPIC_PREFIX`/`MQTT_NAME`.  
+Default value for `MQTT_STATUS_TOPIC_PREFIX` is `status/`.
 
 Sensor config:
 ```

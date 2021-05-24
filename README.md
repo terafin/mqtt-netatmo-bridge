@@ -46,7 +46,7 @@ services:
       NETATMO_CLIENT_ID: YOUR_NETATMO_CLIENT_ID,
       NETATMO_CLIENT_SECRET: YOUR_NETATMO_CLIENT_SECRET,
       MQTT_HOST: YOUR_MQTT_URL (eg: mqtt://mqtt.yourdomain.net)
-      MQTT_STATUS_TOPIC_PREFIX: /status/ (set to fix issue when not set)
+      MQTT_STATUS_TOPIC_PREFIX: status/ (set to fix issue when not set)
       (OPTIONAL) MQTT_USER: YOUR_MQTT_USERNAME
       (OPTIONAL) MQTT_PASS: YOUR_MQTT_PASSWORD
       (OPTIONAL) MQTT_NAME: netatmo-bridge

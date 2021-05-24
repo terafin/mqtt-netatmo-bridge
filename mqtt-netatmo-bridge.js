@@ -7,7 +7,7 @@ const _ = require('lodash')
 const logging = require('homeautomation-js-lib/logging.js')
 const mqtt_helpers = require('homeautomation-js-lib/mqtt_helpers.js')
 const health = require('homeautomation-js-lib/health.js')
-const { publishHADiscoveryConfigs, normalize } = require('./ha-mqtt-auto-discovery')
+const { publishHADiscoveryConfigs, normalize } = require('./ha-mqtt-auto-discovery.js')
 
 // Config
 // const webhook_url = process.env.WEBHOOK_URL

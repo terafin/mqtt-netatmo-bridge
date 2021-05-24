@@ -1,6 +1,15 @@
 version: "3"
 services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    ports:
+      - 1883:1883
+    volumes:
+      - $PWD/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
   mqtt-netatmo-bridge:
     image: diversit/mqtt-netatmo-bridge
     build: .
     env_file: .env
+    depends_on:
+      - mosquitto
