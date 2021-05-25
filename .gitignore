@@ -39,3 +39,7 @@ jspm_packages
 
 # Optional locale settings
 .env
+
+# Mosquitto data/passwords
+mosquitto/mosquitto_pass.conf
+mosquitto/db

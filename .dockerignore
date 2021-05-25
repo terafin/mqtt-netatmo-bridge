@@ -19,3 +19,7 @@ node_modules
 
 # ignore all *.class files in all folders, including build root
 **/*.class
+
+# ignore docker-compose and related configs, data, etc
+docker-compose.yaml
+mosquitto/
