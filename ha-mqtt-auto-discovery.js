@@ -48,27 +48,32 @@ const createHASensorConfig = function(station, module, propertyName) {
 /** Publis sensor config for each data property of a module */
 const publishSensorConfigsForModule = function(mqttClient, station, module) {
     logging.warn(`Publishing MQTT Discovery configs for module ${module.module_name}`)
-    propertyNames = Object.getOwnPropertyNames(module.dashboard_data)
-    if (module.battery_percent) {
-        propertyNames.push('battery')
-    }
-    if (module.rf_status) {
-        propertyNames.push('rf_status')
-    }
-    if (module.wifi_status) {
-        propertyNames.push('wifi_status')
-    }
+    if (module.dashboard_data) {
+        propertyNames = Object.getOwnPropertyNames(module.dashboard_data)
+        if (module.battery_percent) {
+            propertyNames.push('battery')
+        }
+        if (module.rf_status) {
+            propertyNames.push('rf_status')
+        }
+        if (module.wifi_status) {
+            propertyNames.push('wifi_status')
+        }
 
-    propertyNames.forEach(pn => {
-        const sensorConfig = createHASensorConfig(station, module, pn)
-        logging.debug('sensor config:')
-        logging.debug(sensorConfig)
+        propertyNames.forEach(pn => {
+            const sensorConfig = createHASensorConfig(station, module, pn)
+            logging.debug('sensor config:')
+            logging.debug(sensorConfig)
 
-        const configTopic = `${homeAssistantDiscoveryPrefix}/sensor/netatmo-bridge/${normalize(station.station_name)}_${normalize(module.module_name)}_${normalize(pn)}/config`
-        logging.debug(`config topic: ${configTopic}`)
+            const configTopic = `${homeAssistantDiscoveryPrefix}/sensor/netatmo-bridge/${normalize(station.station_name)}_${normalize(module.module_name)}_${normalize(pn)}/config`
+            logging.debug(`config topic: ${configTopic}`)
 
-        mqttClient.smartPublish(configTopic, prettyPrint(sensorConfig), { retain: retainMessage })
-    })
+            mqttClient.smartPublish(configTopic, prettyPrint(sensorConfig), { retain: retainMessage })
+        })
+    } else {
+        logger.warn(`No dashboard_data for this station`)
+        logger.warn(`data: ${module}`)
+    }
 }
 
 const prettyPrint = function(json) {
