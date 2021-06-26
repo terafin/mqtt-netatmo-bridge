@@ -36,3 +36,10 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 .vscode
+
+# Optional locale settings
+.env
+
+# Mosquitto data/passwords
+mosquitto/mosquitto_pass.conf
+mosquitto/db

@@ -1,22 +1,24 @@
 // Requirements
+require('dotenv').config()
 const mqtt = require('mqtt')
 const netatmo = require('netatmo')
 const interval = require('interval-promise')
 const _ = require('lodash')
 const logging = require('homeautomation-js-lib/logging.js')
 const mqtt_helpers = require('homeautomation-js-lib/mqtt_helpers.js')
-
 const health = require('homeautomation-js-lib/health.js')
-
+const { publishHADiscoveryConfigs, normalize } = require('./ha-mqtt-auto-discovery.js')
 
 // Config
-const webhook_url = process.env.WEBHOOK_URL
-const webhook_port = process.env.WEBHOOK_PORT
+// const webhook_url = process.env.WEBHOOK_URL
+// const webhook_port = process.env.WEBHOOK_PORT
 const netatmo_user = process.env.NETATMO_USER
 const netatmo_pass = process.env.NETATMO_PASS
 const netatmo_client_id = process.env.NETATMO_CLIENT_ID
 const netatmo_client_secret = process.env.NETATMO_CLIENT_SECRET
 const topicPrefix = process.env.TOPIC_PREFIX
+const pollIntervalSeconds = process.env.POLL_INTERVAL_SECONDS || 60
+const retainValues = process.env.RETAIN_VALUES || true
 
 // Setup MQTT
 const client = mqtt_helpers.setupClient(null, null)
@@ -75,7 +77,6 @@ var auth = {
 
 var api = null
 
-
 const reconnect = function() {
     logging.info('connecting')
     api = new netatmo(auth)
@@ -107,19 +108,28 @@ var getStationsData = function(err, devices) {
         return
     }
 
+    logging.info('devices:')
     logging.info(devices)
-    const station = devices[0]
+
+    devices.forEach(processStation)
+}
+
+var processStation = function(station) {
+    logging.info(`Processing station ${station.station_name}`)
+
+    // when enabled, published HomeAssistant MQTT Discovery configs
+    publishHADiscoveryConfigs(client, station)
+
+    processModule(station, station)
+
     const foundModules = station.modules
-
-    processModule(station)
-
     if (_.isNil(foundModules)) {
         logging.error('no modules found: ' + stations)
         return
     }
 
     foundModules.forEach(function(module) {
-        processModule(module)
+        processModule(station, module)
     }, this)
 }
 
@@ -201,22 +211,22 @@ api.on('get-lasteventof', handleEvents)
 api.on('get-eventsuntil', handleEvents)
 
 
-
-const processModule = function(module) {
+const processModule = function(station, module) {
     const name = module.module_name
-    const data = module.dashboard_data
-    logging.info('Looking at module: ' + name)
+    const data = {
+        ...module.dashboard_data,
+        ...(module.battery_percent && { battery: module.battery_percent }),
+        ...(module.rf_status && { rf_status: module.rf_status  }),
+        ...(module.wifi_status && { wifi_status: module.wifi_status })
+    }
+    logging.info(`Looking at module: ${station.station_name}.${name}`)
     logging.info('   data: ' + JSON.stringify(data))
+    logging.debug('module:')
+    logging.debug(module)
     health.healthyEvent()
 
-    const batteryPercent = module.battery_percent
-    if (!_.isNil(batteryPercent)) {
-        const batteryTopic = mqtt_helpers.generateTopic(topicPrefix, name, 'battery')
-        client.smartPublish(batteryTopic, batteryPercent, { retain: true })
-    }
-
     logging.info('starting smart publish')
-    client.smartPublishCollection(mqtt_helpers.generateTopic(topicPrefix, name), data, [], { retain: true })
+    client.smartPublishCollection(mqtt_helpers.generateTopic(topicPrefix, normalize(station.station_name), name), data, [], { retain: retainValues })
     logging.info('done')
 }
 
@@ -226,22 +236,14 @@ const pollData = function() {
     api.getStationsData(getStationsData)
 }
 
-const refreshToken = function() {
-    logging.info('Refreshing login token')
-    api = new netatmo(auth)
-}
-
 const startMonitoring = function() {
     logging.info('Starting netatmo <-> MQTT')
 
     pollData()
     interval(async() => {
+        // no need to refresh the token, since it's done by Netatmo lib
         pollData()
-    }, 30 * 1000)
-
-    interval(async() => {
-        refreshToken()
-    }, 25 * 1000)
+    }, pollIntervalSeconds * 1000)
 }
 
 startMonitoring()
