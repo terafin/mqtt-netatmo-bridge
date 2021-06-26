@@ -71,8 +71,8 @@ const publishSensorConfigsForModule = function(mqttClient, station, module) {
             mqttClient.smartPublish(configTopic, prettyPrint(sensorConfig), { retain: retainMessage })
         })
     } else {
-        logger.warn(`No dashboard_data for this station`)
-        logger.warn(`data: ${module}`)
+        logging.warn(`No dashboard_data for this station`)
+        logging.warn(`data: ${module}`)
     }
 }
 
