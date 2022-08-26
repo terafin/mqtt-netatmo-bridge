@@ -14,10 +14,15 @@ const topicPrefix = process.env.TOPIC_PREFIX
 const retainMessage = true
 
 const normalize = function(s) {
-    return s.replace('(','')
-        .replace(')','')
-        .replace(' ','_')
-        .toLowerCase()
+    if (s) {
+        return s.replace('(','')
+            .replace(')','')
+            .replace(' ','_')
+            .toLowerCase()
+    } else {
+        logging.warn(`null value!`)
+        throw 'Cannot normalize null value'
+    }
 }
 
 /** Create the device config for HomeAssitant MQTT Auto Discovery */
